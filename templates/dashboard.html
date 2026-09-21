@@ -1,0 +1,568 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard - Student Performance AI
+{% endblock %}
+
+{% block content %}
+
+<!-- Dashboard Header -->
+
+<div class="dashboard-header">
+
+    <div>
+        <h1>Dashboard</h1>
+
+        <p>
+            Welcome to the Student Performance AI monitoring system.
+        </p>
+    </div>
+
+    <div class="dashboard-actions">
+
+        <a href="{{ url_for('add_student') }}" class="btn">
+            + Add Student
+        </a>
+
+        <a href="{{ url_for('predict') }}" class="btn secondary-btn">
+            🤖 Predict
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- Main Statistics -->
+
+<div class="dashboard-stats">
+
+    <div class="dashboard-card">
+
+        <div class="dashboard-card-icon">
+            👨‍🎓
+        </div>
+
+        <div>
+            <span>Total Students</span>
+            <strong>{{ total_students }}</strong>
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-card">
+
+        <div class="dashboard-card-icon">
+            🎯
+        </div>
+
+        <div>
+            <span>Average Predicted Score</span>
+            <strong>{{ average_score }}</strong>
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-card">
+
+        <div class="dashboard-card-icon">
+            🏆
+        </div>
+
+        <div>
+            <span>Excellent</span>
+            <strong>{{ excellent }}</strong>
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-card">
+
+        <div class="dashboard-card-icon">
+            ⚠️
+        </div>
+
+        <div>
+            <span>At Risk</span>
+            <strong>{{ at_risk }}</strong>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Performance Summary -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+            <h2>Performance Overview</h2>
+
+            <p>
+                Current predicted performance distribution.
+            </p>
+        </div>
+
+        <a href="{{ url_for('analytics') }}">
+            View Analytics →
+        </a>
+
+    </div>
+
+
+    <div class="performance-summary">
+
+        <div class="performance-item">
+
+            <div class="performance-label">
+                <span>Excellent</span>
+                <strong>{{ excellent }}</strong>
+            </div>
+
+            <div class="performance-progress">
+                <div
+                    class="performance-progress-bar excellent-bar"
+                    data-value="{{ excellent }}"
+                    data-total="{{ total_students }}">
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="performance-item">
+
+            <div class="performance-label">
+                <span>Good</span>
+                <strong>{{ good }}</strong>
+            </div>
+
+            <div class="performance-progress">
+                <div
+                    class="performance-progress-bar good-bar"
+                    data-value="{{ good }}"
+                    data-total="{{ total_students }}">
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="performance-item">
+
+            <div class="performance-label">
+                <span>Average</span>
+                <strong>{{ average }}</strong>
+            </div>
+
+            <div class="performance-progress">
+                <div
+                    class="performance-progress-bar average-bar"
+                    data-value="{{ average }}"
+                    data-total="{{ total_students }}">
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="performance-item">
+
+            <div class="performance-label">
+                <span>At Risk</span>
+                <strong>{{ at_risk }}</strong>
+            </div>
+
+            <div class="performance-progress">
+                <div
+                    class="performance-progress-bar risk-bar"
+                    data-value="{{ at_risk }}"
+                    data-total="{{ total_students }}">
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Risk Summary -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+            <h2>Risk Overview</h2>
+
+            <p>
+                Students grouped according to predicted academic risk.
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="risk-summary">
+
+        <div class="risk-card low-risk">
+
+            <div class="risk-number">
+                {{ low_risk }}
+            </div>
+
+            <div>
+                <h3>Low Risk</h3>
+                <p>Students performing safely.</p>
+            </div>
+
+        </div>
+
+
+        <div class="risk-card medium-risk">
+
+            <div class="risk-number">
+                {{ medium_risk }}
+            </div>
+
+            <div>
+                <h3>Medium Risk</h3>
+                <p>Students requiring attention.</p>
+            </div>
+
+        </div>
+
+
+        <div class="risk-card high-risk">
+
+            <div class="risk-number">
+                {{ high_risk }}
+            </div>
+
+            <div>
+                <h3>High Risk</h3>
+                <p>Students requiring intervention.</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Recent Students -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+            <h2>Recent Students</h2>
+
+            <p>
+                Latest student prediction records.
+            </p>
+        </div>
+
+        <a href="{{ url_for('students') }}">
+            View All →
+        </a>
+
+    </div>
+
+
+    {% if students %}
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Attendance</th>
+                    <th>Predicted Score</th>
+                    <th>Performance</th>
+                    <th>Risk</th>
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for student in students[:5] %}
+
+                <tr>
+
+                    <td>
+                        {{ student["student_id"] }}
+                    </td>
+
+                    <td>
+                        <strong>
+                            {{ student["name"] }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ student["attendance"] }}%
+                    </td>
+
+                    <td>
+
+                        <strong>
+                            {{ "%.2f"|format(student["predicted_score"]) }}
+                        </strong>
+
+                    </td>
+
+                    <td>
+
+                        <span class="badge">
+                            {{ student["performance"] }}
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <span class="badge">
+                            {{ student["risk_level"] }}
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <a
+                            href="{{ url_for('student_detail', student_id=student['id']) }}"
+                            class="view-btn">
+                            View
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-state">
+
+        <h3>No student records yet</h3>
+
+        <p>
+            Add your first student to start making predictions.
+        </p>
+
+        <br>
+
+        <a
+            href="{{ url_for('add_student') }}"
+            class="btn">
+            + Add Student
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+<div class="dashboard-grid">
+
+    <!-- Top Performers -->
+    <div class="dashboard-section">
+
+        <div class="section-header">
+            <div>
+                <h2>🏆 Top Performers</h2>
+                <p>Students with the highest predicted scores</p>
+            </div>
+        </div>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Score</th>
+                        <th>Performance</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for student in top_students %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                {{ student["name"] }}
+                            </strong>
+
+                            <br>
+
+                            <small>
+                                {{ student["student_id"] }}
+                            </small>
+                        </td>
+
+                        <td>
+                            <strong>
+                                {{ "%.2f"|format(student["predicted_score"]) }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            <span class="badge">
+                                {{ student["performance"] }}
+                            </span>
+                        </td>
+
+                    </tr>
+
+                {% else %}
+
+                    <tr>
+                        <td colspan="3">
+                            No student data available.
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- At Risk Students -->
+    <div class="dashboard-section">
+
+        <div class="section-header">
+            <div>
+                <h2>⚠️ At-Risk Students</h2>
+                <p>Students requiring academic attention</p>
+            </div>
+        </div>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Score</th>
+                        <th>Risk</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for student in at_risk_students %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                {{ student["name"] }}
+                            </strong>
+
+                            <br>
+
+                            <small>
+                                {{ student["student_id"] }}
+                            </small>
+                        </td>
+
+                        <td>
+                            <strong>
+                                {{ "%.2f"|format(student["predicted_score"]) }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            <span class="badge">
+                                {{ student["risk_level"] }}
+                            </span>
+                        </td>
+
+                    </tr>
+
+                {% else %}
+
+                    <tr>
+                        <td colspan="3">
+                            No student data available.
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document
+    .querySelectorAll(".performance-progress-bar")
+    .forEach(function(bar) {
+
+        const value =
+            parseFloat(bar.dataset.value) || 0;
+
+        const total =
+            parseFloat(bar.dataset.total) || 0;
+
+        let percentage = 0;
+
+        if (total > 0) {
+            percentage =
+                (value / total) * 100;
+        }
+
+        bar.style.width =
+            percentage + "%";
+
+    });
+
+</script>
+
+{% endblock %}

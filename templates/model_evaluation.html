@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+
+{% block title %}
+Model Evaluation - Student Performance AI
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>ML Model Evaluation</h1>
+
+        <p>
+            Performance evaluation of the Random Forest prediction model.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- Evaluation Metrics -->
+
+<div class="evaluation-stats">
+
+    <div class="evaluation-card">
+
+        <div class="evaluation-icon">
+            📊
+        </div>
+
+        <div>
+
+            <span>MAE</span>
+
+            <strong>
+                {{ "%.2f"|format(metrics.mae) }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="evaluation-card">
+
+        <div class="evaluation-icon">
+            📈
+        </div>
+
+        <div>
+
+            <span>RMSE</span>
+
+            <strong>
+                {{ "%.2f"|format(metrics.rmse) }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="evaluation-card">
+
+        <div class="evaluation-icon">
+            🎯
+        </div>
+
+        <div>
+
+            <span>R² Score</span>
+
+            <strong>
+                {{ "%.2f"|format(metrics.r2_score) }}
+            </strong>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Explanation -->
+
+<div class="evaluation-info">
+
+    <h2>Evaluation Metrics</h2>
+
+    <div class="metric-description">
+
+        <div>
+
+            <h3>MAE</h3>
+
+            <p>
+                Mean Absolute Error measures the average difference
+                between the actual and predicted scores.
+            </p>
+
+        </div>
+
+
+        <div>
+
+            <h3>RMSE</h3>
+
+            <p>
+                Root Mean Squared Error measures prediction error
+                while giving more importance to larger errors.
+            </p>
+
+        </div>
+
+
+        <div>
+
+            <h3>R² Score</h3>
+
+            <p>
+                R² indicates how well the model explains the variation
+                in student final scores.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Feature Importance -->
+
+<div class="chart-card">
+
+    <div class="chart-header">
+
+        <h2>Feature Importance</h2>
+
+        <p>
+            Relative contribution of each input feature to the model.
+        </p>
+
+    </div>
+
+    <div class="chart-container large-chart">
+
+        <canvas id="featureImportanceChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<!-- Feature Table -->
+
+<div class="table-container">
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Feature</th>
+
+                <th>Importance</th>
+
+                <th>Percentage</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for feature, importance in metrics.feature_importance.items() %}
+
+            <tr>
+
+                <td>
+                    {{ feature.replace("_", " ").title() }}
+                </td>
+
+                <td>
+                    {{ "%.4f"|format(importance) }}
+                </td>
+
+                <td>
+                    {{ "%.2f"|format(importance * 100) }}%
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<div id="featureData" style="display: none;">
+    {{ metrics.feature_importance | tojson }}
+</div>
+
+
+<script>
+
+    const featureDataElement =
+        document.getElementById("featureData");
+
+
+    const featureData =
+        JSON.parse(
+            featureDataElement.textContent
+        );
+
+
+    const featureLabels =
+        Object.keys(featureData).map(
+            function(feature) {
+
+                return feature
+                    .replaceAll("_", " ")
+                    .replace(/\b\w/g, function(letter) {
+                        return letter.toUpperCase();
+                    });
+
+            }
+        );
+
+
+    const featureValues =
+        Object.values(featureData);
+
+
+    new Chart(
+        document.getElementById(
+            "featureImportanceChart"
+        ),
+        {
+
+            type: "bar",
+
+            data: {
+
+                labels: featureLabels,
+
+                datasets: [
+
+                    {
+
+                        label: "Feature Importance",
+
+                        data: featureValues
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        title: {
+
+                            display: true,
+
+                            text: "Importance"
+
+                        }
+
+                    }
+
+                },
+
+                plugins: {
+
+                    legend: {
+
+                        display: false
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}
+Import & Export - Student Performance AI
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <h1>Import & Export</h1>
+
+        <p>
+            Import student records from CSV/Excel
+            and export prediction results.
+        </p>
+    </div>
+
+</div>
+{% if success %}
+
+<div class="success-message">
+
+    {{ success }}
+
+</div>
+
+{% endif %}
+
+
+{% if error %}
+
+<div class="error-message">
+
+    {{ error }}
+
+</div>
+
+{% endif %}
+
+
+{% if failed_count is defined and failed_count > 0 %}
+
+<div class="error-message">
+
+    <strong>
+        {{ failed_count }} row(s) could not be imported.
+    </strong>
+
+    <ul>
+
+        {% for item in errors %}
+
+        <li>
+            {{ item }}
+        </li>
+
+        {% endfor %}
+
+    </ul>
+
+</div>
+
+{% endif %}
+
+<div class="import-export-grid">
+
+
+    <!-- IMPORT -->
+
+    <div class="dashboard-card">
+
+        <div class="dashboard-card-icon">
+            📥
+        </div>
+
+        <h2>Import Students</h2>
+
+        <p>
+            Upload a CSV or Excel file containing
+            student academic information.
+        </p>
+
+        <form
+            method="POST"
+            action="{{ url_for('import_students') }}"
+            enctype="multipart/form-data">
+
+            <div class="form-group">
+
+                <label for="file">
+                    Select File
+                </label>
+
+                <input
+                    type="file"
+                    id="file"
+                    name="file"
+                    accept=".csv,.xlsx"
+                    required>
+
+            </div>
+
+            <button
+                type="submit"
+                class="btn">
+
+                Import Students
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- EXPORT -->
+
+    <div class="dashboard-card">
+
+        <div class="dashboard-card-icon">
+            📤
+        </div>
+
+        <h2>Export Students</h2>
+
+        <p>
+            Download all student prediction
+            records as an Excel file.
+        </p>
+
+        <a
+            href="{{ url_for('export_students') }}"
+            class="btn">
+
+            Export to Excel
+
+        </a>
+
+    </div>
+
+
+</div>
+
+
+<div class="chart-card">
+
+    <div class="chart-header">
+
+        <h2>Required Import Columns</h2>
+
+        <p>
+            Your CSV/Excel file should contain
+            the following columns.
+        </p>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Column</th>
+                    <th>Description</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>student_id</td>
+                    <td>Unique student ID</td>
+                </tr>
+
+                <tr>
+                    <td>name</td>
+                    <td>Student name</td>
+                </tr>
+
+                <tr>
+                    <td>attendance</td>
+                    <td>Attendance percentage</td>
+                </tr>
+
+                <tr>
+                    <td>study_hours</td>
+                    <td>Daily study hours</td>
+                </tr>
+
+                <tr>
+                    <td>previous_score</td>
+                    <td>Previous academic score</td>
+                </tr>
+
+                <tr>
+                    <td>assignment_score</td>
+                    <td>Assignment score</td>
+                </tr>
+
+                <tr>
+                    <td>internal_score</td>
+                    <td>Internal examination score</td>
+                </tr>
+
+                <tr>
+                    <td>sleep_hours</td>
+                    <td>Average sleep hours</td>
+                </tr>
+
+                <tr>
+                    <td>participation</td>
+                    <td>Class participation score</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

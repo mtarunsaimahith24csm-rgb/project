@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block title %}
+Prediction - Student Performance AI
+{% endblock %}
+
+{% block content %}
+
+<div class="prediction-page">
+
+    <div class="page-header">
+        <div>
+            <h1>AI Performance Prediction</h1>
+            <p>Enter student academic information to predict performance.</p>
+        </div>
+    </div>
+
+    <div class="prediction-layout">
+
+        <!-- Prediction Form -->
+        <div class="prediction-card">
+
+            <div class="card-header">
+                <div class="card-icon">🤖</div>
+                <div>
+                    <h2>Student Information</h2>
+                    <p>Enter the required academic details</p>
+                </div>
+            </div>
+
+            {% if error %}
+            <div class="prediction-error">
+                ⚠️ {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" class="prediction-form">
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="attendance">
+                            Attendance (%)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="attendance"
+                            name="attendance"
+                            min="0"
+                            max="100"
+                            step="0.1"
+                            placeholder="e.g. 85"
+                            required
+                        >
+
+                        <small>Enter attendance percentage</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="study_hours">
+                            Study Hours
+                        </label>
+
+                        <input
+                            type="number"
+                            id="study_hours"
+                            name="study_hours"
+                            min="0"
+                            step="0.1"
+                            placeholder="e.g. 5"
+                            required
+                        >
+
+                        <small>Average study hours per day</small>
+                    </div>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="previous_score">
+                            Previous Score
+                        </label>
+
+                        <input
+                            type="number"
+                            id="previous_score"
+                            name="previous_score"
+                            min="0"
+                            max="100"
+                            step="0.1"
+                            placeholder="e.g. 78"
+                            required
+                        >
+
+                        <small>Previous academic score</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignment_score">
+                            Assignment Score
+                        </label>
+
+                        <input
+                            type="number"
+                            id="assignment_score"
+                            name="assignment_score"
+                            min="0"
+                            max="100"
+                            step="0.1"
+                            placeholder="e.g. 82"
+                            required
+                        >
+
+                        <small>Average assignment score</small>
+                    </div>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="internal_score">
+                            Internal Score
+                        </label>
+
+                        <input
+                            type="number"
+                            id="internal_score"
+                            name="internal_score"
+                            min="0"
+                            max="100"
+                            step="0.1"
+                            placeholder="e.g. 80"
+                            required
+                        >
+
+                        <small>Internal examination score</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sleep_hours">
+                            Sleep Hours
+                        </label>
+
+                        <input
+                            type="number"
+                            id="sleep_hours"
+                            name="sleep_hours"
+                            min="0"
+                            step="0.1"
+                            placeholder="e.g. 7"
+                            required
+                        >
+
+                        <small>Average sleep hours per day</small>
+                    </div>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="participation">
+                            Participation (0-10)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="participation"
+                            name="participation"
+                            min="0"
+                            max="10"
+                            step="0.1"
+                            placeholder="e.g. 8"
+                            required
+                        >
+
+                        <small>Class participation level</small>
+                    </div>
+
+                    <div class="form-group empty-field">
+                    </div>
+
+                </div>
+
+
+                <button type="submit" class="prediction-button">
+                    <span>🤖</span>
+                    Predict Performance
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- Result Card -->
+        <div class="result-card">
+
+            {% if prediction is not none %}
+
+                <div class="result-header">
+                    <div class="result-icon">📊</div>
+
+                    <div>
+                        <h2>Prediction Result</h2>
+                        <p>AI-generated performance prediction</p>
+                    </div>
+                </div>
+
+
+                <div class="score-circle">
+
+                    <div class="score-number">
+                        {{ "%.2f"|format(prediction) }}
+                    </div>
+
+                    <div class="score-label">
+                        out of 100
+                    </div>
+
+                </div>
+
+
+                <div class="result-details">
+
+                    <div class="result-item">
+                        <span>Performance</span>
+
+                        <strong class="performance-badge">
+                            {{ performance }}
+                        </strong>
+                    </div>
+
+
+                    <div class="result-item">
+                        <span>Risk Level</span>
+
+                        <strong class="risk-badge">
+                            {{ risk_level }}
+                        </strong>
+                    </div>
+
+                </div>
+
+
+                <div class="prediction-message">
+
+                    {% if performance == "Excellent" %}
+
+                        🎉 Excellent predicted performance.
+                        Keep maintaining the same academic habits!
+
+                    {% elif performance == "Good" %}
+
+                        👍 Good predicted performance.
+                        There is still room for further improvement.
+
+                    {% elif performance == "Average" %}
+
+                        📚 Average predicted performance.
+                        Increasing study time and participation may help.
+
+                    {% else %}
+
+                        ⚠️ The prediction indicates that the student
+                        may require additional academic support.
+
+                    {% endif %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-result">
+
+                    <div class="empty-result-icon">
+                        📈
+                    </div>
+
+                    <h2>Prediction Result</h2>
+
+                    <p>
+                        Enter the student's information and click
+                        <strong>Predict Performance</strong> to generate
+                        an AI-based prediction.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
